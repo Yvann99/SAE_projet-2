@@ -276,7 +276,7 @@ def normalize_probabilities(fold: float, call: float, raise_: float) -> dict:
         values = values / total
     return {"fold": float(values[0]), "call": float(values[1]), "raise": float(values[2])}
 
-
+## On utilise ici une sigmoide pour transformer un score (relatif à la force de la main et à la position) en une valeur comprise entre 0 et 1. Plus le sore de jeu est élevé par rapport au seil défini, plus la sigmoide se rapproche de 1, qui est la probabilité de faire l'action
 def get_gto_frequencies(hand_strength: float, position: str, context: dict) -> dict:
     """
     Retourne une stratégie préflop simplifiée sous forme de fréquences.
