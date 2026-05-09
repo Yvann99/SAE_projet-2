@@ -1,0 +1,45 @@
+
+ÉVALUATION DU MODÈLE NON SUPERVISÉ - K-MEANS LÉGER
+
+Rappel important :
+Le modèle n'utilise pas la colonne is_bot pendant l'entraînement.
+La colonne is_bot sert uniquement à vérifier après coup si les clusters détectés
+correspondent aux bots simulés.
+
+Variables utilisées pour le clustering :
+- decision_time_mean
+- decision_time_std
+- bet_size_std
+- gto_similarity
+- mean_l1_gto_distance
+
+Accuracy : 1.0000
+Precision : 1.0000
+Recall : 1.0000
+F1-score : 1.0000
+
+Rapport détaillé :
+
+              precision    recall  f1-score   support
+
+      Humain       1.00      1.00      1.00       750
+ Bot/Suspect       1.00      1.00      1.00       250
+
+    accuracy                           1.00      1000
+   macro avg       1.00      1.00      1.00      1000
+weighted avg       1.00      1.00      1.00      1000
+
+
+Répartition réelle humains/bots par cluster :
+
+is_bot     0    1
+cluster          
+0        750    0
+1          0  250
+
+Répartition des niveaux de risque :
+
+risk_level
+low       700
+medium    200
+high      100

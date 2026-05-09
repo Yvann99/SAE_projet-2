@@ -1,0 +1,78 @@
+
+RAPPORT DE FRUGALITÉ DU SYSTÈME
+
+1. Données utilisées
+
+Nombre de joueurs analysés : 1000
+Nombre de mains préflop simulées : 69761
+Nombre de variables utilisées : 32
+Taille du dataset joueurs : 478.16 KB
+Taille du dataset mains : 19622.93 KB
+
+Variables utilisées :
+- vpip
+- pfr
+- af
+- action_entropy
+- decision_time_mean
+- decision_time_std
+- bet_size_mean
+- bet_size_std
+- gto_similarity
+- gto_deviation_rate
+- mean_gto_action_probability
+- mean_l1_gto_distance
+- std_l1_gto_distance
+- avg_hand_strength
+- weak_hand_play_rate
+- trash_hand_vpip
+- premium_hand_play_rate
+- strong_hand_aggression_rate
+- marginal_hand_error_rate
+- gto_fold_follow_rate
+- gto_call_follow_rate
+- gto_raise_follow_rate
+- open_raise_accuracy
+- defense_accuracy
+- threebet_accuracy
+- blind_defense_rate
+- blind_defense_accuracy
+- sb_steal_attempt_rate
+- pot_odds_call_accuracy
+- hands_played
+- sessions_played
+- fatigue_slope
+
+2. Modèle supervisé : Random Forest
+
+Temps d'entraînement : 0.2086 secondes
+Taille du modèle sauvegardé : 230.09 KB
+
+3. Modèle non supervisé : K-Means
+
+Temps d'entraînement : 0.3629 secondes
+Taille du modèle sauvegardé : 0.64 KB
+
+4. Synthèse frugalité
+
+Taille totale des modèles : 230.73 KB
+Nombre total de variables : 32
+
+Interprétation :
+
+Le système utilise un nombre volontairement limité de variables comportementales agrégées à partir des mains préflop simulées.
+Les modèles choisis sont simples et rapides à entraîner :
+- Random Forest pour la détection supervisée ;
+- K-Means pour la détection non supervisée.
+
+Cette architecture respecte une logique d'IA frugale, car elle évite les modèles lourds
+de type deep learning et privilégie des algorithmes classiques, interprétables et peu coûteux.
+
+5. Conclusion
+
+Le projet montre qu'il est possible de construire un système de détection de bots
+simple, rapide et peu gourmand en ressources, tout en conservant une bonne capacité
+de détection sur des données simulées.
+
+Les résultats doivent cependant être interprétés avec prudence, car le dataset est simulé.
+Une validation sur données réelles serait nécessaire pour confirmer la robustesse du système.
