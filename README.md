@@ -90,6 +90,66 @@ Les variables utilisées par les modèles sont agrégées à partir des décisio
 - `gto_deviation_rate` : taux d'écart à l'action théorique dominante ;
 - `mean_gto_action_probability` : probabilité théorique moyenne de l'action réellement jouée ;
 - `mean_l1_gto_distance` : distance moyenne entre l'action jouée et la distribution théorique `fold/call/raise` ;
+Pour comparer une action réelle à une distribution de probabilités, il faut qu'elles parlent la même langue.
+
+La GTO est déjà un vecteur de probabilités : [Fold%, Call%, Raise%].
+
+Exemple : [0.1, 0.7, 0.2]
+
+L'action du joueur est transformée en vecteur binaire :
+
+Si le joueur a fait Call, son vecteur devient [0.0, 1.0, 0.0].
+
+2. Le calcul de l'écart (La somme des différences absolues)
+
+On soustrait chaque élément du vecteur joueur à celui du vecteur GTO, et on prend la valeur absolue (pour que les écarts ne s'annulent pas entre eux).
+
+Distance=∣Fold 
+joueur
+​	
+ −Fold 
+GTO
+​	
+ ∣+∣Call 
+joueur
+​	
+ −Call 
+GTO
+​	
+ ∣+∣Raise 
+joueur
+​	
+ −Raise 
+GTO
+​	
+ ∣
+3. Exemple concret
+
+Imaginons un spot où la GTO recommande de souvent folder, mais de bluffer de temps en temps :
+
+GTO freqs : Fold: 0.8, Call: 0.0, Raise: 0.2
+
+Action Joueur : Le joueur décide de Call (une erreur, car la GTO ne recommandait jamais de payer ici). Son vecteur est [0, 1, 0].
+
+Le calcul :
+
+Écart Fold : ∣0−0.8∣=0.8
+
+Écart Call : ∣1−0.0∣=1.0
+
+Écart Raise : ∣0−0.2∣=0.2
+
+Total Distance L1 : 0.8+1.0+0.2=2.0
+
+Pourquoi utiliser la distance L1 plutôt que juste "Vrai/Faux" ?
+
+Nuance de l'erreur : Faire un "Call" alors que la GTO disait de "Call" à 40% et "Fold" à 60% donnera une petite distance. Faire un "Call" alors que la GTO disait "Fold" à 100% donnera une distance maximale (2.0).
+
+Signature du Bot : Un bot GTO aura une distance L1 moyenne très proche de 0 sur le long terme (car il finit par équilibrer ses actions selon les fréquences). Un humain aura une distance L1 moyenne beaucoup plus élevée et instable.
+
+Sensibilité aux fréquences : C'est le seul moyen de détecter si un joueur "mixe" ses mains correctement (ex: bluffer exactement la fréquence recommandée).
+
+C'est cette valeur numérique que ton Random Forest va analyser. S'il voit une moyenne de distance L1 de 0.05, il "saura" presque à coup sûr que c'est un bot.
 - `weak_hand_play_rate` : fréquence de jeu des mains faibles ;
 - `trash_hand_vpip` : fréquence de jeu des mains très faibles ;
 - `premium_hand_play_rate` : fréquence de jeu des mains premium ;
@@ -108,6 +168,11 @@ Les variables utilisées par les modèles sont agrégées à partir des décisio
 - `decision_time_mean` et `decision_time_std` : temps moyen et régularité des décisions ;
 - `bet_size_mean` et `bet_size_std` : taille moyenne et régularité des mises ;
 - `action_entropy` : diversité des actions. L'Entropy Action permet de quantifier la richesse stratégique d'un joueur. Un bot se distingue par une entropie anormalement stable, là où l'humain présente des variations liées à la psychologie (fatigue, tilt).
+## À noter dans la simulation des comportements humains/bots : 
+L'humain : La fonction reçoit hand_index et n_hands. Pourquoi ? Pour simuler la dégradation des performances. Plus l'humain joue longtemps (plus le ratio hand_index / n_hands est élevé), plus il va "tilter", s'ennuyer ou faire des erreurs de concentration. Son niveau de bruit (noise_level) augmente avec le temps.
+
+Le bot : Il n'a pas ces paramètres. Pour un automate, la 1ère main et la 10 000ème main sont traitées avec la même précision glaciale. Il est invariant dans le temps.
+
 
 ## Limite méthodologique
 

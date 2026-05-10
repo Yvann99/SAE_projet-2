@@ -471,12 +471,12 @@ def simulate_bet_size_bb(is_bot: int, action: str, context: dict, rng: np.random
     scale = 1.0 if is_bot else 3.0
     return float(np.clip(rng.normal(loc=loc, scale=scale), 12.0, 35.0))
 
-
+# indicateur d'entropie, qu'on va utiliser pour le random forest ensuite
 def action_entropy(actions: pd.Series) -> float:
     """Calcule une entropie normalisée entre 0 et 1 sur fold/call/raise."""
-    probabilities = actions.value_counts(normalize=True)
-    entropy = -sum(p * np.log2(p) for p in probabilities if p > 0)
-    return float(entropy / np.log2(len(ACTIONS)))
+    probabilities = actions.value_counts(normalize=True) #Cette ligne regarde l'historique des actions du joueur (ex: sur 100 mains) et calcule la fréquence de chaque action
+    entropy = -sum(p * np.log2(p) for p in probabilities if p > 0) # calcule l'entropie de Shannon
+    return float(entropy / np.log2(len(ACTIONS))) # Normalise l'entropie afin d'avoir une valeur entre 0 et 1
 
 
 def simulate_player_hands(player_id: str, is_bot: int, n_hands: int, rng: np.random.Generator) -> pd.DataFrame:
@@ -497,7 +497,7 @@ def simulate_player_hands(player_id: str, is_bot: int, n_hands: int, rng: np.ran
         if is_bot:
             player_action = choose_bot_action(gto_freqs, hand_strength, context, profile, rng)
         else:
-            player_action = choose_human_action(gto_freqs, hand_strength, context, hand_index, n_hands, profile, rng)
+            player_action = choose_human_action(gto_freqs, hand_strength, context, hand_index, n_hands, profile, rng) #ici on ajoute n_hands et hands_index pour ajouetr le facteur de fatigue de l'humain
 
         chosen_action_probability = gto_freqs[player_action]
         gto_l1_distance = compute_l1_distance(player_action, gto_freqs)
