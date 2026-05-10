@@ -148,6 +148,10 @@ Sensibilité aux fréquences : C'est le seul moyen de détecter si un joueur "mi
 
 C'est cette valeur numérique que ton Random Forest va analyser. S'il voit une moyenne de distance L1 de 0.05, il "saura" presque à coup sûr que c'est un bot.
 
+Reproductibilité et Contrôle du Hasard
+
+Afin de garantir la validité scientifique des résultats et la stabilité du pipeline de données, le projet utilise un paramètre random_state (Seed) systématique. Ce mécanisme permet de transformer le processus de simulation pseudo-aléatoire en une expérience déterministe : le même jeu de données (cartes, temps de décision, profils de joueurs) sera généré à chaque exécution. Cette approche est cruciale pour le débogage, la comparaison objective des performances des modèles de Machine Learning et la reproductibilité des tests sur n'importe quel environnement de calcul.
+
 ## Limite méthodologique
 
 Les données sont simulées. Les résultats valident la cohérence du pipeline, mais une validation sur données réelles serait nécessaire pour conclure sur une performance opérationnelle.
