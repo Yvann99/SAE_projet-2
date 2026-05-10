@@ -152,6 +152,18 @@ Reproductibilité et Contrôle du Hasard
 
 Afin de garantir la validité scientifique des résultats et la stabilité du pipeline de données, le projet utilise un paramètre random_state (Seed) systématique. Ce mécanisme permet de transformer le processus de simulation pseudo-aléatoire en une expérience déterministe : le même jeu de données (cartes, temps de décision, profils de joueurs) sera généré à chaque exécution. Cette approche est cruciale pour le débogage, la comparaison objective des performances des modèles de Machine Learning et la reproductibilité des tests sur n'importe quel environnement de calcul.
 
+### Analyse de la structure décisionnelle (Plot Tree)
+
+Pour assurer la transparence du modèle et lever l'effet « boîte noire », le projet intègre un module de visualisation de la structure logique des arbres de décision. Cette méthode permet d'extraire un estimateur individuel de la forêt aléatoire afin d'auditer les règles de classification apprises.
+
+La lecture de l'arbre s'articule autour de trois indicateurs clés :
+
+* **Seuils de segmentation :** Chaque nœud identifie la variable la plus discriminante (ex: `decision_time_std`) et le seuil précis permettant de séparer les profils.
+* **Indice de Gini :** Ce coefficient mesure la pureté des nœuds. Un indice proche de zéro indique que le modèle a réussi à isoler parfaitement un groupe de joueurs (humains ou bots).
+* **Distribution des classes :** La visualisation permet de confirmer que les décisions du modèle reposent sur des critères comportementaux cohérents, tels que la régularité anormale du rythme de jeu ou l'absence de dégradation de la performance au cours du temps.
+
+Cette capacité d'audit est fondamentale pour valider la robustesse de la détection et garantir que l'algorithme ne s'appuie pas sur des corrélations biaisées.
+
 ## Limite méthodologique
 
 Les données sont simulées. Les résultats valident la cohérence du pipeline, mais une validation sur données réelles serait nécessaire pour conclure sur une performance opérationnelle.
