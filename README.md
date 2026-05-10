@@ -107,7 +107,7 @@ Les variables utilisées par les modèles sont agrégées à partir des décisio
 - `pot_odds_call_accuracy` : cohérence des calls dans les spots avec pot odds favorables ;
 - `decision_time_mean` et `decision_time_std` : temps moyen et régularité des décisions ;
 - `bet_size_mean` et `bet_size_std` : taille moyenne et régularité des mises ;
-- `action_entropy` : diversité des actions.
+- `action_entropy` : diversité des actions. L'Entropy Action permet de quantifier la richesse stratégique d'un joueur. Un bot se distingue par une entropie anormalement stable, là où l'humain présente des variations liées à la psychologie (fatigue, tilt).
 
 ## Limite méthodologique
 

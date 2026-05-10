@@ -458,7 +458,7 @@ def simulate_bet_size_bb(is_bot: int, action: str, context: dict, rng: np.random
 
     # Raise / open raise / 3-bet / 4-bet simplifié.
     if previous_action in {"unopened", "limped"}:
-        loc = 2.45 if is_bot else 2.55. # il s'agit du premier raise, le bot relance de 2.45 en moyenne sinon 2.55 pour l'humain
+        loc = 2.45 if is_bot else 2.55 # il s'agit du premier raise, le bot relance de 2.45 en moyenne sinon 2.55 pour l'humain
         scale = 0.15 if is_bot else 0.38 # c'est ici que la différence est flagrante
         return float(np.clip(rng.normal(loc=loc, scale=scale), 2.0, 4.5))
 
