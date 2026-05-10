@@ -153,7 +153,7 @@ def compute_hand_strength(hand_class: str) -> float:
 
     return float(np.clip(score, 5, 100))
 
-
+# Ici on classe les mains en fonction de leur force
 def classify_hand_family(hand_class: str, hand_strength: float) -> str:
     """Classe une main dans une famille poker lisible."""
     if len(hand_class) == 2:
@@ -185,7 +185,7 @@ def classify_hand_family(hand_class: str, hand_strength: float) -> str:
         return "marginal"
     return "standard"
 
-
+# La position joue un rôle important dans la force de notre jeu, on la prends donc en compte, les valeurs des bonus sont à débattre/expliquer
 def position_bonus(position: str) -> float:
     """Bonus de jouabilité selon la position."""
     return {
@@ -197,7 +197,7 @@ def position_bonus(position: str) -> float:
         "BB": 4.0,
     }[position]
 
-
+# Fonction pour prendre en compte le prix de la blinde et réequilibrer les stats en fonction
 def posted_blind(position: str) -> float:
     """Retourne la blinde déjà postée par la position."""
     if position == "SB":
@@ -206,7 +206,7 @@ def posted_blind(position: str) -> float:
         return BIG_BLIND_BB
     return 0.0
 
-
+# Fonction qui va servir de base pour le comportement des joueurs, on définit le pot, les stacks (la profondeur) et les pots odds
 def simulate_preflop_context(position: str, rng: np.random.Generator) -> dict:
     """
     Simule un contexte préflop minimal : action précédente, pot, mise à payer,
@@ -600,6 +600,7 @@ def aggregate_player_features(player_hands: pd.DataFrame) -> dict:
     sb_steal_spots = player_hands[(player_hands["position"] == "SB") & (player_hands["previous_action"] == "unopened")]
     pot_odds_call_spots = player_hands[(player_hands["amount_to_call_bb"] > 0) & (player_hands["pot_odds"] <= 0.30)]
 
+    #Ici on va comparer la pente de fatigue des joueurs entre la première moitié de la session et la deuxième, normalement pour un humain, il devrait y avoir un écart significatif et pour un bot 0
     first_half = player_hands.iloc[: hands_played // 2]
     second_half = player_hands.iloc[hands_played // 2 :]
     fatigue_slope = float(second_half["is_gto_correct"].mean() - first_half["is_gto_correct"].mean())
@@ -644,13 +645,13 @@ def aggregate_player_features(player_hands: pd.DataFrame) -> dict:
 
 def generate_dataset(n_players: int, bot_ratio: float, random_state: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Génère le dataset joueur agrégé et le dataset détaillé main par main."""
-    rng = np.random.default_rng(random_state)
+    rng = np.random.default_rng(random_state) # random_state permet la reproductabilité de la simulation, il s'agit de la graine pour l'aléa, par exemple lors du 1 er tirage, le joueur 1 recoit AKs, lors d'un relancement, il reçoit de nouveau AKs au premier tirage
 
-    n_bots = int(n_players * bot_ratio)
+    n_bots = int(n_players * bot_ratio)    # Ici on détermine le nombre d'humains et de bots
     n_humans = n_players - n_bots
 
     labels = np.array([0] * n_humans + [1] * n_bots)
-    rng.shuffle(labels)
+    rng.shuffle(labels) # On mélange les joueurs bot et humains
 
     player_rows = []
     hand_rows = []
@@ -668,8 +669,8 @@ def generate_dataset(n_players: int, bot_ratio: float, random_state: int) -> tup
         player_rows.append({"player_id": player_id, "is_bot": int(is_bot), **features})
         hand_rows.extend(player_hands.to_dict("records"))
 
-    players_dataset = pd.DataFrame(player_rows)
-    hands_dataset = pd.DataFrame(hand_rows)
+    players_dataset = pd.DataFrame(player_rows) #C'est ce dataset qui est envoyé au Random forest
+    hands_dataset = pd.DataFrame(hand_rows)  # Des milliers de lignes. Utile pour l'analyse comportementale profonde.
 
     return players_dataset, hands_dataset
 
@@ -680,7 +681,7 @@ def save_dataset(players_dataset: pd.DataFrame, output_path) -> None:
     players_dataset.to_csv(output_path, index=False)
 
 
-def save_hands_dataset(hands_dataset: pd.DataFrame, output_path) -> None:
+def save_hands_dataset(hands_dataset: pd.DataFrame, output_path) -> None: 
     """Sauvegarde le dataset détaillé main par main."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     hands_dataset.to_csv(output_path, index=False)
