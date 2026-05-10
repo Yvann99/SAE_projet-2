@@ -491,8 +491,8 @@ def simulate_player_hands(player_id: str, is_bot: int, n_hands: int, rng: np.ran
         hand_family = classify_hand_family(hand_class, hand_strength)
         position = str(rng.choice(POSITIONS))
         context = simulate_preflop_context(position, rng)
-        gto_freqs = get_gto_frequencies(hand_strength, position, context)
-        gto_action = recommended_action(gto_freqs)
+        gto_freqs = get_gto_frequencies(hand_strength, position, context) #gto_freqs (pour GTO Frequencies) est un dictionnaire qui contient les probabilités optimales pour chaque action possible.
+        gto_action = recommended_action(gto_freqs) #gto_action est une chaîne de caractères ("fold", "call" ou "raise") qui représente l'action la plus logique ou la plus fréquente selon la théorie
 
         if is_bot:
             player_action = choose_bot_action(gto_freqs, hand_strength, context, profile, rng)
@@ -500,7 +500,7 @@ def simulate_player_hands(player_id: str, is_bot: int, n_hands: int, rng: np.ran
             player_action = choose_human_action(gto_freqs, hand_strength, context, hand_index, n_hands, profile, rng) #ici on ajoute n_hands et hands_index pour ajouetr le facteur de fatigue de l'humain
 
         chosen_action_probability = gto_freqs[player_action]
-        gto_l1_distance = compute_l1_distance(player_action, gto_freqs)
+        gto_l1_distance = compute_l1_distance(player_action, gto_freqs) # On calcul la distance entre le play et la théorie pour chaque main préflop
         decision_time = simulate_decision_time(is_bot, player_action, hand_strength, context, rng)
         bet_size_bb = simulate_bet_size_bb(is_bot, player_action, context, rng)
 
@@ -545,7 +545,7 @@ def simulate_player_hands(player_id: str, is_bot: int, n_hands: int, rng: np.ran
 
     return pd.DataFrame(rows)
 
-
+# Ces fonctions servent à s'assurer que le programme ne va pas planter, par exemple si un joueur n'a jamais rencontré de situation de 4 Bet, il peut y avoir un Nan dans sa colonne, ce qui peut entrainer des divisions par zéro et faire planter l'algo
 def _safe_mean(series: pd.Series) -> float:
     """Retourne une moyenne sûre, égale à 0 si la série est vide."""
     if len(series) == 0:
@@ -565,8 +565,8 @@ def aggregate_player_features(player_hands: pd.DataFrame) -> dict:
     actions = player_hands["player_action"]
     hands_played = len(player_hands)
 
-    vpip = float((actions != "fold").mean())
-    pfr = float((actions == "raise").mean())
+    vpip = float((actions != "fold").mean()) #ici on calcul les métrics pour le random forest, fréquence de mise d'argent dans le pot
+    pfr = float((actions == "raise").mean()) #Fréquence de relance
 
     calls = int((actions == "call").sum())
     raises = int((actions == "raise").sum())
@@ -575,18 +575,20 @@ def aggregate_player_features(player_hands: pd.DataFrame) -> dict:
     played_hands = player_hands[player_hands["player_action"] != "fold"]
     bet_size_mean = _safe_mean(played_hands["bet_size_bb"])
     bet_size_std = float(played_hands["bet_size_bb"].std(ddof=0)) if len(played_hands) else 0.0
-
+    
+    # ici on filtre les mains selon leur force relative afin d'analyser ensuite les plays des joueurs en fonction de la force de leur main
     weak_hands = player_hands[player_hands["hand_strength"] < 45]
     trash_hands = player_hands[player_hands["hand_family"] == "trash"]
     premium_hands = player_hands[player_hands["hand_strength"] >= 78]
     strong_hands = player_hands[player_hands["hand_strength"] >= 70]
     marginal_hands = player_hands[(player_hands["hand_strength"] >= 42) & (player_hands["hand_strength"] <= 62)]
-
-    weak_hand_play_rate = float((weak_hands["player_action"] != "fold").mean()) if len(weak_hands) else 0.0
-    trash_hand_vpip = float((trash_hands["player_action"] != "fold").mean()) if len(trash_hands) else 0.0
+    
+    # On calcule les différents ratio pour le random forest ensuite 
+    weak_hand_play_rate = float((weak_hands["player_action"] != "fold").mean()) if len(weak_hands) else 0.0 # On regarde lorsque le joueur a joué des mains faible
+    trash_hand_vpip = float((trash_hands["player_action"] != "fold").mean()) if len(trash_hands) else 0.0 # On regarde lorsque le joueur a joué des mains dites "poubelles", ici c'est un bon indicateur de bot ou non, si son ratio est proche de 0 et que le joueur est gagnant, il se peut que ce soit un bot
     premium_hand_play_rate = float((premium_hands["player_action"] != "fold").mean()) if len(premium_hands) else 0.0
     strong_hand_aggression_rate = float((strong_hands["player_action"] == "raise").mean()) if len(strong_hands) else 0.0
-    marginal_hand_error_rate = float(1 - marginal_hands["is_gto_correct"].mean()) if len(marginal_hands) else 0.0
+    marginal_hand_error_rate = float(1 - marginal_hands["is_gto_correct"].mean()) if len(marginal_hands) else 0.0 # Cet indicateur est pertinent car c'est ici que l'humain fait le plus d'erreur
 
     fold_spots = player_hands[player_hands["gto_action"] == "fold"]
     call_spots = player_hands[player_hands["gto_action"] == "call"]
