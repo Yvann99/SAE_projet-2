@@ -458,15 +458,15 @@ def simulate_bet_size_bb(is_bot: int, action: str, context: dict, rng: np.random
 
     # Raise / open raise / 3-bet / 4-bet simplifié.
     if previous_action in {"unopened", "limped"}:
-        loc = 2.45 if is_bot else 2.55
-        scale = 0.15 if is_bot else 0.38
+        loc = 2.45 if is_bot else 2.55. # il s'agit du premier raise, le bot relance de 2.45 en moyenne sinon 2.55 pour l'humain
+        scale = 0.15 if is_bot else 0.38 # c'est ici que la différence est flagrante
         return float(np.clip(rng.normal(loc=loc, scale=scale), 2.0, 4.5))
 
     if previous_action == "open_raise":
         loc = 8.2 if is_bot else 8.5
-        scale = 0.45 if is_bot else 1.25
+        scale = 0.45 if is_bot else 1.25 # pour un trois bet, l'écart type est plus grand ce qui coincide avec la difficulté de sizer ce coup
         return float(np.clip(rng.normal(loc=loc, scale=scale), 5.5, 13.0))
-
+    # ici on est dans la situation du 4 bet, plus rare et bcp plus imprécis ( dans la réalité, ça part souvent à tapis)
     loc = 19.0 if is_bot else 20.0
     scale = 1.0 if is_bot else 3.0
     return float(np.clip(rng.normal(loc=loc, scale=scale), 12.0, 35.0))
