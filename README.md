@@ -164,6 +164,30 @@ La lecture de l'arbre s'articule autour de trois indicateurs clés :
 
 Cette capacité d'audit est fondamentale pour valider la robustesse de la détection et garantir que l'algorithme ne s'appuie pas sur des corrélations biaisées.
 
+## Analyse du Modèle Non Supervisé : Isolation Forest
+
+L'approche non supervisée a été intégralement refondue pour passer d'un partitionnement par K-Means à une détection par **Isolation Forest**, algorithme de référence en cybersécurité pour l'identification de comportements aberrants.
+
+### Évolutions Techniques
+* **Algorithme d'isolement :** Contrairement au clustering classique, l'Isolation Forest isole les observations suspectes par partitionnement aléatoire. Les profils automatisés, ayant des statistiques extrêmes, sont isolés plus précocement que la masse des profils humains.
+* **Frugalité et Sélection de Variables :** Pour réduire le "bruit" statistique, le modèle se concentre sur 6 variables critiques (frugalité) liées au timing de décision, à la variance des mises et à la stricte adhérence aux fréquences GTO.
+* **Réalisme du Dataset :** La simulation a été ajustée pour refléter la réalité du marché (2000 joueurs, 5 % de bots). Cette faible proportion transforme la détection de bots en un véritable problème d'identification d'anomalies.
+
+### Performances et Points Forts
+* **Efficacité "à l'aveugle" :** Le modèle atteint un F1-Score élevé sans jamais avoir accès aux étiquettes réelles pendant l'entraînement. Il identifie les signatures robotiques par pure analyse de structure.
+* **Maîtrise des Faux Positifs :** Le taux d'erreur sur les profils humains est inférieur à 1 %. Dans un scénario réel, ces profils seraient soumis à une vérification manuelle plutôt qu'à un bannissement automatique.
+* **Optimisation des Ressources :** Le pipeline est extrêmement léger, s'entraînant en une fraction de seconde avec une empreinte mémoire minimale.
+
+### Limites et Biais Identifiés
+* **Biais de Simulation :** L'algorithme identifie la signature mathématique générée par nos propres scripts de simulation. Un bot de production intégrant du bruit aléatoire complexe pourrait réduire cette détectabilité.
+* **Variables Spécifiques :** Le choix des variables d'élite repose sur notre connaissance préalable des comportements simulés.
+* **Paramètre de Contamination :** L'algorithme utilise un taux de contamination prédéfini (5 %), une donnée rarement connue avec précision dans un environnement de production réel.
+
+### Note Stratégique : Le Dilemme du Bot
+L'efficacité du système ne réside pas seulement dans le bannissement, mais dans la contrainte imposée au tricheur. Pour échapper à une détection basée sur la perfection statistique, un créateur de bot doit introduire des erreurs volontaires. Or, au poker, toute déviation de l'optimalité mathématique réduit l'espérance de gain (EV). 
+
+**Notre système impose un dilemme économique :** soit le bot joue de manière optimale et s'expose à une détection immédiate, soit il simule l'erreur humaine pour rester furtif, perdant ainsi sa rentabilité financière.
+
 ## Limite méthodologique
 
 Les données sont simulées. Les résultats valident la cohérence du pipeline, mais une validation sur données réelles serait nécessaire pour conclure sur une performance opérationnelle.
