@@ -6,8 +6,8 @@ RAPPORT DE FRUGALITÉ DU SYSTÈME
 Nombre de joueurs analysés : 1000
 Nombre de mains préflop simulées : 69761
 Nombre de variables utilisées : 32
-Taille du dataset joueurs : 478.16 KB
-Taille du dataset mains : 19622.93 KB
+Taille du dataset joueurs : 478.14 KB
+Taille du dataset mains : 19620.98 KB
 
 Variables utilisées :
 - vpip
@@ -45,17 +45,17 @@ Variables utilisées :
 
 2. Modèle supervisé : Random Forest
 
-Temps d'entraînement : 0.2086 secondes
+Temps d'entraînement : 0.2761 secondes
 Taille du modèle sauvegardé : 230.09 KB
 
 3. Modèle non supervisé : K-Means
 
-Temps d'entraînement : 0.3629 secondes
-Taille du modèle sauvegardé : 0.64 KB
+Temps d'entraînement : 0.4129 secondes
+Taille du modèle sauvegardé : 1219.83 KB
 
 4. Synthèse frugalité
 
-Taille totale des modèles : 230.73 KB
+Taille totale des modèles : 1449.92 KB
 Nombre total de variables : 32
 
 Interprétation :
